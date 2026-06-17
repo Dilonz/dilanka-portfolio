@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio · Dilanka Lakshitha</title>
+  <!-- fonts & base styles (minimal reset, same design tokens) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== design tokens (mirror main) ===== */
+    :root {
+      --bg: #060608; --bg-2: #0d0d12; --surface: rgba(255,255,255,0.04);
+      --surface-2: rgba(255,255,255,0.07); --border: rgba(255,255,255,0.09);
+      --border-2: rgba(255,255,255,0.14); --text: #f0eff5; --muted: #9896aa;
+      --muted-2: #5e5c70; --accent: #7c5af0; --accent-rgb: 124,90,240;
+      --accent-2: #a882ff; --accent-glow: rgba(124,90,240,0.22);
+      --title-font: 'Syne', system-ui, sans-serif;
+      --body-font: 'Space Grotesk', system-ui, sans-serif;
+      --radius: 10px; --radius-lg: 18px;
+      color-scheme: dark;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: var(--body-font); font-size:16px; line-height:1.7;
+      padding: 0 24px;
+    }
+    body::before {
+      content: ''; position: fixed; inset:0; z-index:-5;
+      background: radial-gradient(ellipse 60% 50% at 10% 10%, rgba(124,90,240,.10), transparent),
+                  radial-gradient(ellipse 50% 60% at 90% 80%, rgba(124,90,240,.06), transparent),
+                  var(--bg);
+    }
+    a { color:inherit; text-decoration:none; }
+    img { max-width:100%; display:block; }
+    h1,h2,h3 { font-family: var(--title-font); font-weight:700; color:var(--text); }
+    .container { max-width: 1160px; margin:0 auto; padding:24px 0 40px; }
+
+    /* ===== header ===== */
+    .page-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 0; border-bottom: 1px solid var(--border);
+      margin-bottom: 32px; flex-wrap: wrap;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .brand-mark {
+      display: grid; place-items: center; width: 44px; height:44px;
+      background: var(--accent); color:#fff; border-radius:8px;
+      font-family: var(--title-font); font-size:14px; font-weight:800;
+    }
+    .brand-name {
+      font-family: var(--title-font); font-weight:700; font-size:1rem;
+      line-height:1.2;
+    }
+    .back-link {
+      color: var(--muted); font-weight:500; border:1px solid var(--border);
+      padding:8px 18px; border-radius:99px; transition: .2s;
+    }
+    .back-link:hover { border-color:var(--accent); color:var(--accent-2); }
+
+    /* ===== filters ===== */
+    .filter-bar {
+      display: flex; flex-wrap: wrap; gap:10px; margin-bottom:40px;
+    }
+    .filter-btn {
+      background: var(--surface); border:1px solid var(--border);
+      border-radius:99px; padding:8px 22px; color:var(--muted);
+      font-weight:600; font-size:.85rem; transition: .2s; cursor:pointer;
+    }
+    .filter-btn.active,
+    .filter-btn:hover {
+      background: var(--accent); border-color:var(--accent); color:#fff;
+    }
+
+    /* ===== grid ===== */
+    .project-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+      gap:28px;
+    }
+    .project-card {
+      background: var(--surface); border:1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+    }
+    .project-card:hover {
+      transform: translateY(-6px); border-color: rgba(var(--accent-rgb),0.4);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .project-card.hidden { display: none; }
+
+    .project-thumb {
+      position: relative; aspect-ratio: 16/10; overflow:hidden;
+      background: var(--bg-2);
+    }
+    .project-thumb img {
+      width:100%; height:100%; object-fit:cover; transition:transform .3s;
+    }
+    .project-card:hover .project-thumb img { transform:scale(1.04); }
+
+    .project-tag {
+      position: absolute; top:14px; left:14px;
+      background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
+      border:1px solid var(--border-2); border-radius:99px;
+      padding:4px 12px; font-size:.7rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:.1em; color:var(--text);
+    }
+    .project-links {
+      position: absolute; bottom:14px; right:14px; display:flex; gap:8px;
+    }
+    .project-links a {
+      display: grid; place-items: center; width:34px; height:34px;
+      background: rgba(0,0,0,0.6); border-radius:99px;
+      backdrop-filter: blur(4px); border:1px solid var(--border-2);
+      transition: .2s; color:var(--text);
+    }
+    .project-links a:hover { background:var(--accent); border-color:var(--accent); }
+    .project-links svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; }
+
+    .project-body {
+      padding:20px 22px 24px;
+    }
+    .project-body h3 {
+      font-size:1.1rem; margin-bottom:6px;
+    }
+    .project-body .meta {
+      font-size:.8rem; color:var(--muted-2); margin-bottom:12px;
+      display:flex; gap:16px; flex-wrap:wrap;
+    }
+    .project-body .meta span { display:flex; align-items:center; gap:4px; }
+    .project-body p {
+      color:var(--muted); font-size:.9rem; margin-bottom:14px;
+    }
+    .tech-stack {
+      display:flex; flex-wrap:wrap; gap:6px;
+    }
+    .tech-stack span {
+      background: var(--surface-2); border:1px solid var(--border);
+      border-radius:99px; padding:2px 12px; font-size:.7rem;
+      font-weight:600; color:var(--muted);
+    }
+
+    /* ===== footer ===== */
+    .footer-note {
+      border-top:1px solid var(--border); margin-top:56px;
+      padding:24px 0; display:flex; justify-content:space-between;
+      flex-wrap:wrap; gap:12px; color:var(--muted-2); font-size:.85rem;
+    }
+
+    /* ===== responsive ===== */
+    @media (max-width:600px) {
+      body { padding:0 16px; }
+      .page-header { flex-direction:column; align-items:flex-start; gap:16px; }
+      .filter-bar { gap:6px; }
+      .filter-btn { padding:6px 14px; font-size:.8rem; }
+      .project-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- header -->
+    <header class="page-header">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">DL</span>
+        <span class="brand-name">Dilanka<br/>Lakshitha</span>
+      </a>
+      <a class="back-link" href="index.html">← Back to home</a>
+    </header>
+
+    <h1 style="font-size:clamp(32px,5vw,48px); margin-bottom:8px;">Portfolio</h1>
+    <p style="color:var(--muted); margin-bottom:32px; max-width:600px;">
+      A curated showcase of Shopify, WordPress, front-end and SEO projects.
+    </p>
+
+    <!-- filter bar -->
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="shopify">Shopify</button>
+      <button class="filter-btn" data-filter="wordpress">WordPress</button>
+      <button class="filter-btn" data-filter="frontend">Front-End</button>
+      <button class="filter-btn" data-filter="seo">SEO</button>
+      <button class="filter-btn" data-filter="liquid">Liquid</button>
+    </div>
+
+    <!-- project grid -->
+    <div class="project-grid" id="projectGrid">
+
+      <!-- 1 -->
+      <div class="project-card" data-category="shopify liquid">
+        <div class="project-thumb">
+          <img src="assets/projects/project-1.png" alt="Custom Product Page" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%231a1230%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2230%22 y=%22110%22 font-family=%22Syne%22 fill=%22%23a882ff%22 font-size=%2220%22%3EProduct%20Page%3C/text%3E%3C/svg%3E'" />
+          <span class="project-tag">Shopify</span>
+          <div class="project-links">
+            <a href="#" aria-label="Live preview"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+            <a href="#" aria-label="Source"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+          </div>
+        </div>
+        <div class="project-body">
+          <h3>Custom Product Page</h3>
+          <div class="meta"><span>📅 2025</span><span>⚡ Liquid · Metafields</span></div>
+          <p>Fully custom Liquid section with variant selectors, metafield-driven content, and mobile-first layout.</p>
+          <div class="tech-stack"><span>Liquid</span><span>CSS</span><span>JS</span><span>Metafields</span></div>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="project-card" data-category="shopify">
+        <div class="project-thumb">
+          <img src="assets/projects/project-2.png" alt="Dawn Theme Build" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%230f1d2a%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2230%22 y=%22110%22 font-family=%22Syne%22 fill=%22%23a882ff%22 font-size=%2220%22%3EDawn%20Theme%3C/text%3E%3C/svg%3E'" />
+          <span class="project-tag">Shopify</span>
+          <div class="project-links">
+            <a href="#"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+            <a href="#"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+          </div>
+        </div>
+        <div class="project-body">
+          <h3>Dawn Theme Build</h3>
+          <div class="meta"><span>📅 2025</span><span>⚡ Custom Sections</span></div>
+          <p>Tailored Dawn-based store with custom sections, brand colours, conversion copy, and responsive UX.</p>
+          <div class="tech-stack"><span>Liquid</span><span>CSS</span><span>Dawn</span></div>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="project-card" data-category="liquid shopify">
+        <div class="project-thumb">
+          <img src="assets/projects/project-3.png" alt="Reusable Sections Library" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%23221020%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2230%22 y=%22110%22 font-family=%22Syne%22 fill=%22%23a882ff%22 font-size=%2220%22%3ELiquid%20Lib%3C/text%3E%3C/svg%3E'" />
+          <span class="project-tag">Liquid</span>
+          <div class="project-links">
+            <a href="#"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+            <a href="#"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+          </div>
+        </div>
+        <div class="project-body">
+          <h3>Reusable Sections Library</h3>
+          <div class="meta"><span>📅 2025</span><span>⚡ Component-based</span></div>
+          <p>Component library of drop-in Liquid sections: testimonials, FAQs, hero banners, and more.</p>
+          <div class="tech-stack"><span>Liquid</span><span>SCSS</span><span>JS</span></div>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="project-card" data-category="wordpress">
+        <div class="project-thumb">
+          <img src="assets/projects/project-4.png" alt="WooCommerce Store" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%231a1a30%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2230%22 y=%22110%22 font-family=%22Syne%22 fill=%22%23a882ff%22 font-size=%2220%22%3EWooCommerce%3C/text%3E%3C/svg%3E'" />
+          <span class="project-tag">WooCommerce</span>
+          <div class="project-links">
+            <a href="#"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+            <a href="#"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+          </div>
+        </div>
+        <div class="project-body">
+          <h3>WooCommerce Store</h3>
+          <div class="meta"><span>📅 2024</span><span>⚡ Custom Theme</span></div>
+          <p>Custom WooCommerce theme with product filtering, fast checkout, and mobile optimisation.</p>
+          <div class="tech-stack"><span>WordPress</span><span>WooCommerce</span><span>PHP</span></div>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="project-card" data-category="seo">
+        <div class="project-thumb">
+          <img src="assets/projects/project-5.png" alt="Store SEO Optimisation" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%230e2016%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2230%22 y=%22110%22 font-family=%22Syne%22 fill=%22%23a882ff%22 font-size=%2220%22%3ESEO%20Audit%3C/text%3E%3C/svg%3E'" />
+          <span class="project-tag">SEO</span>
+          <div class="project-links">
+            <a href="#"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+            <a href="#"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+          </div>
+        </div>
+        <div class="project-body">
+          <h3>Store SEO Optimisation</h3>
+          <div class="meta"><span>📅 2025</span><span>⚡ On-page + structured data</span></div>
+          <p>On-page SEO audit, structured data, meta rewrites, and analytics setup for an e-commerce brand.</p>
+          <div class="tech-stack"><span>SEO</span><span>Analytics</span><span>Schema</span></div>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="project-card" data-category="frontend">
+        <div class="project-thumb">
+          <img src="assets/projects/project-6.png" alt="Responsive Landing Page" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%231e1210%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2230%22 y=%22110%22 font-family=%22Syne%22 fill=%22%23a882ff%22 font-size=%2220%22%3ELanding%20Page%3C/text%3E%3C/svg%3E'" />
+          <span class="project-tag">Front-End</span>
+          <div class="project-links">
+            <a href="#"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+            <a href="#"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+          </div>
+        </div>
+        <div class="project-body">
+          <h3>Responsive Landing Page</h3>
+          <div class="meta"><span>📅 2025</span><span>⚡ Conversion focused</span></div>
+          <p>Conversion-focused HTML/CSS/JS landing page with animation, form, and fast load time.</p>
+          <div class="tech-stack"><span>HTML</span><span>CSS</span><span>JS</span></div>
+        </div>
+      </div>
+
+      <!-- 7 extra: Shopify + SEO -->
+      <div class="project-card" data-category="shopify seo">
+        <div class="project-thumb">
+          <img src="assets/projects/project-7.png" alt="Shopify SEO & CRO" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%231a0d28%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2230%22 y=%22110%22 font-family=%22Syne%22 fill=%22%23a882ff%22 font-size=%2220%22%3ECRO%20%2B%20SEO%3C/text%3E%3C/svg%3E'" />
+          <span class="project-tag">Shopify</span>
+          <div class="project-links">
+            <a href="#"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+          </div>
+        </div>
+        <div class="project-body">
+          <h3>Shopify SEO &amp; CRO</h3>
+          <div class="meta"><span>📅 2025</span><span>⚡ Conversion rate</span></div>
+          <p>Technical SEO audit, speed optimisation, and A/B tested checkout improvements.</p>
+          <div class="tech-stack"><span>SEO</span><span>Liquid</span><span>Analytics</span></div>
+        </div>
+      </div>
+
+      <!-- 8: WordPress + frontend -->
+      <div class="project-card" data-category="wordpress frontend">
+        <div class="project-thumb">
+          <img src="assets/projects/project-8.png" alt="WordPress Brand Site" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%230d1a28%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2230%22 y=%22110%22 font-family=%22Syne%22 fill=%22%23a882ff%22 font-size=%2220%22%3EWP%20Brand%3C/text%3E%3C/svg%3E'" />
+          <span class="project-tag">WordPress</span>
+          <div class="project-links">
+            <a href="#"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+          </div>
+        </div>
+        <div class="project-body">
+          <h3>WordPress Brand Site</h3>
+          <div class="meta"><span>📅 2024</span><span>⚡ Custom theme</span></div>
+          <p>Full WordPress site with custom Gutenberg blocks, newsletter integration, and performance tuning.</p>
+          <div class="tech-stack"><span>WordPress</span><span>PHP</span><span>SCSS</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- footer -->
+    <footer class="footer-note">
+      <span>© 2025 Dilanka Lakshitha · All projects are real client work or personal builds.</span>
+      <span>🛠️ built with purpose</span>
+    </footer>
+  </div>
+
+  <!-- filter script -->
+  <script>
+    (function() {
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      const cards = document.querySelectorAll('.project-card');
+
+      function filterProjects(category) {
+        cards.forEach(card => {
+          const cats = card.dataset.category.split(' ');
+          if (category === 'all' || cats.includes(category)) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      }
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          filterBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          const filter = this.dataset.filter;
+          filterProjects(filter);
+        });
+      });
+
+      // optional: if URL hash ?filter=seo
+      const hash = window.location.hash.replace('#', '');
+      if (hash) {
+        const targetBtn = document.querySelector(`.filter-btn[data-filter="${hash}"]`);
+        if (targetBtn) {
+          targetBtn.click();
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
